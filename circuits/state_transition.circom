@@ -10,7 +10,11 @@ template state_transition () {
     signal input pubkey[5]; // pubkey for each of the 5 players
 
     signal input votes[55];        // KP and KS for each player (5*5*2), signatures for each player (5)
-    signal input outputState[20];  // L, P, S, pubkey for each of the 5 players (4*5)
+    
+    signal input outputLiveness[5];
+    signal input outputPublicVotingPower[5];
+    signal input outputSecretVotingPower[5];
+    signal input outputPubkey[5]; 
 
     var publicRugTotal[5];
     var secretRugTotal[5];
@@ -92,13 +96,19 @@ template state_transition () {
       playerToRugBkwd = -1;
     }
 
-   //  Verify that output state remains same as input state
+   //  Verify that output state remains same as input state, except that where someone's getting rugged,
+   //  the player to be rugged has output liveness of 0
     for (var i = 0; i < 5; i++) {
-
+      if (i != playerToRugBkwd) {
+         assert (outputLiveness[i] == liveness[i]);
+      } else {
+         assert (outputLiveness[i] == 0 );
+      }
+      assert (outputPublicVotingPower[i] == publicVotingPower[i]);
+      assert (outputSecretVotingPower[i] == secretVotingPower[i]);
+      assert (outputPubkey[i] == pubkey[i]);
     }
     
-    // Verify that in the output state, the player to be rugged has liveness of 0
-   assert (outputState[playerToRugFwd] == 0);
 }
 
 component main = state_transition();
