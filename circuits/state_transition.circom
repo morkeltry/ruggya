@@ -26,6 +26,14 @@ template state_transition () {
     component signVerifiers[5];
 
     for (var i = 0; i < 5; i++) {
+      assert (liveness[i]);
+      assert (publicVotingPower[i]);
+      assert (secretVotingPower[i]);
+      assert (validityOf(pubkey[i]));
+    }
+
+
+    for (var i = 0; i < 5; i++) {
         publicRugTotal[i] = 0;
         secretRugTotal[i] = 0;
     }
@@ -69,6 +77,7 @@ template state_transition () {
         }
     }
 
+    // Fwd/ Bkwd is a hacky quick way to check for tied votes
     highestRugTotalFwd = 0;
     highestRugTotalBkwd = 0;
     playerToRugFwd = 0;
