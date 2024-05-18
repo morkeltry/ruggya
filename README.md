@@ -53,6 +53,25 @@ Constraints can be added where other roles are permitted, so long as they can be
 - `/contracts` Solidity smart contract for on-chain circuit verification
 - `/frontend` React frontend, submitting zero-knowledge proofs to smart contract
 
+
+## Setup
+```
+### Install circom
+git clone https://github.com/iden3/circom.git
+cd circom/
+cargo build --release
+cargo install --path circom
+circom --help
+```
+
+
+```
+```
+
+
+```
+```
+
 ## Usage
 
 1. Run `npm install`.
