@@ -11,6 +11,10 @@
 # production
 /build
 
+# input-specfic zk artifacts
+proof.json
+public.json
+
 # misc
 .DS_Store
 .env.local
