@@ -21,6 +21,7 @@ template state_transition () {
     var playerToRugBkwd;
     var highestRugTotalFwd;
     var highestRugTotalBkwd;
+    var one = 1;
 
     component signVerifiers[5];
 
@@ -104,8 +105,10 @@ template state_transition () {
       } else {
          assert (outputLiveness[i] == 0);
       }
-      outputPublicVotingPower[i] <== publicVotingPower[i];
-      outputPubkey[i] <== pubkey[i];
+      // circumvent ffjavascript/build/main.cjs bug
+      // https://github.com/iden3/snarkjs/issues/301 https://github.com/iden3/snarkjs/issues/252#issuecomment-1411334470
+      outputPublicVotingPower[i] <== publicVotingPower[i] * one;
+      outputPubkey[i] <== pubkey[i] * one;
     }
     
 }
