@@ -66,10 +66,43 @@ circom --help
 
 
 ```
+circom state_transition.circom --r1cs --wasm --sym --c
+cd state_transition_js
+node generate_witness.js state_transition.wasm ../inputState.json witness.wtns
+cd ..
 ```
 
 
 ```
+mkdir setup && cd setup
+
+npx snarkjs powersoftau new bn128 12 pot12_0000.ptau -v
+npx snarkjs powersoftau contribute pot12_0000.ptau pot12_0001.ptau --name="Towers of Pow" -v
+npx snarkjs powersoftau prepare phase2 pot12_0001.ptau pot12_final.ptau -v
+
+npx snarkjs groth16 setup ../state_transition.r1cs pot12_final.ptau state_transition_0000.zkey
+npx snarkjs zkey contribute state_transition_0000.zkey state_transition_0001.zkey --name="Werewolf Will" -v
+npx snarkjs zkey export verificationkey state_transition_0001.zkey verification_key.json
+cd ..
+
+```
+
+WEIRD HACK WE HAVEN'T YET GOT A BETTER WAY TO DO
+`code ../node_modules/ffjavascript/build/main.cjs`
+and at L4975 replace the lines 
+>        const nPoints = Math.floor(buffBases.byteLength / sGIn);
+>        const sScalar = Math.floor(buffScalars.byteLength / nPoints);
+with
+>        const nPoints = Math.floor(buffBases.byteLength / sGIn);
+>        if (nPoints == 0) return G.zero; // added new here
+>        const sScalar = Math.floor(buffScalars.byteLength / nPoints);
+
+
+
+INPUT SPECIFIC USAGE
+
+```
+npx snarkjs groth16 prove setup/state_transition_0001.zkey state_transition_js/witness.wtns proof.json public.json
 ```
 
 ## Usage
