@@ -13,7 +13,6 @@ template state_transition () {
     
     signal input outputLiveness[5];
     signal output outputPublicVotingPower[5];
-    signal output outputSecretVotingPower[5];
     signal output outputPubkey[5]; 
 
     var publicRugTotal[5];
@@ -106,7 +105,6 @@ template state_transition () {
          assert (outputLiveness[i] == 0);
       }
       outputPublicVotingPower[i] <== publicVotingPower[i];
-      outputSecretVotingPower[i] <== secretVotingPower[i];
       outputPubkey[i] <== pubkey[i];
     }
     
