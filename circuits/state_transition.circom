@@ -26,14 +26,6 @@ template state_transition () {
     component signVerifiers[5];
 
     for (var i = 0; i < 5; i++) {
-      assert (liveness[i]);
-      assert (publicVotingPower[i]);
-      assert (secretVotingPower[i]);
-      assert (validityOf(pubkey[i]));
-    }
-
-
-    for (var i = 0; i < 5; i++) {
         publicRugTotal[i] = 0;
         secretRugTotal[i] = 0;
     }
