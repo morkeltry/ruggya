@@ -10,7 +10,7 @@ ifeq ($(shell uname),Linux)
 	NASM=nasm -felf64
 endif
 	
-all: bit_by_bit
+all: state_transition
 	
 %.o: %.cpp $(DEPS_HPP)
 	$(CC) -c $< $(CFLAGS)
@@ -18,5 +18,5 @@ all: bit_by_bit
 fr_asm.o: fr.asm
 	$(NASM) fr.asm -o fr_asm.o
 	
-bit_by_bit: $(DEPS_O) bit_by_bit.o
-	$(CC) -o bit_by_bit *.o -lgmp 
+state_transition: $(DEPS_O) state_transition.o
+	$(CC) -o state_transition *.o -lgmp 
