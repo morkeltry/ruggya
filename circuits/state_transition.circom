@@ -2,7 +2,8 @@ pragma circom 2.0.0;
 
 include "circomlib/circuits/sig.circom"; // Include the circomlib for signature verification
 
-component main {
+template state_transition() {
+    signal input xyz;
     signal input currentState[20]; // L, P, S, pubkey for each of the 5 players (4*5)
     signal input votes[55];        // KP and KS for each player (5*5*2), signatures for each player (5)
     signal input outputState[20];  // L, P, S, pubkey for each of the 5 players (4*5)
@@ -75,3 +76,5 @@ component main {
     // Verify that in the output state, the player to be rugged has liveness of 0
     outputState[playerToRug] == 0;
 }
+
+component main {public [currentState, votes, outputState, publicRugTotal, secretRugTotal, playerToRug, highestRugTotal] } = state_transition();
