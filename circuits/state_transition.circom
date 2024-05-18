@@ -12,9 +12,9 @@ template state_transition () {
     signal input votes[55];        // KP and KS for each player (5*5*2), signatures for each player (5)
     
     signal input outputLiveness[5];
-    signal input outputPublicVotingPower[5];
-    signal input outputSecretVotingPower[5];
-    signal input outputPubkey[5]; 
+    signal output outputPublicVotingPower[5];
+    signal output outputSecretVotingPower[5];
+    signal output outputPubkey[5]; 
 
     var publicRugTotal[5];
     var secretRugTotal[5];
@@ -103,11 +103,11 @@ template state_transition () {
       if (i != playerToRugBkwd) {
          assert (outputLiveness[i] == liveness[i]);
       } else {
-         assert (outputLiveness[i] == 0 );
+         assert (outputLiveness[i] == 0);
       }
-      assert (outputPublicVotingPower[i] == publicVotingPower[i]);
-      assert (outputSecretVotingPower[i] == secretVotingPower[i]);
-      assert (outputPubkey[i] == pubkey[i]);
+      outputPublicVotingPower[i] <== publicVotingPower[i];
+      outputSecretVotingPower[i] <== secretVotingPower[i];
+      outputPubkey[i] <== pubkey[i];
     }
     
 }
