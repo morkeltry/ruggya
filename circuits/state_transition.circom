@@ -112,4 +112,4 @@ template state_transition () {
     
 }
 
-component main = state_transition();
+component main { public [liveness, publicVotingPower, pubkey] } = state_transition();
