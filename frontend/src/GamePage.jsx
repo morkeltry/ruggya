@@ -11,7 +11,7 @@ import character5 from './graphics/character5.jpg';
 
 const characterImages = [character1, character2, character3, character4, character5];
 
-const GamePage = ({ character, pubkey, cols = 8 }) => {
+const GamePage = ({ character, pubkey, socket, gameState, cols = 6 }) => {
   const [publicVoteData, setPublicVoteData] = useState(Array.from({ length: cols }, () => 0));
   const [secretVoteData, setSecretVoteData] = useState(Array.from({ length: cols }, () => 0));
   const [liveness, setLiveness] = useState(Array.from({ length: cols }, () => 0));

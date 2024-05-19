@@ -13,12 +13,15 @@ const characters = [Character1, Character2, Character3, Character4, Character5];
 const App = () => {
   // page = 'register' | 'waiting' | 'character' | 'game' 
   const [page, setPage] = useState('register');
-  const [ws, setWs] = useState({send: ()=>'ws not ready'});
+  const [ws, setWs] = useState({send: msg => 'ws not ready'});
   const [playerNumber, setPlayerNumber] = useState(-1);
   const [character, setCharacter] = useState("");
   const [selfLiveness, setSelfLiveness] = useState(-1);
+  const [gameState, setGameState] = useState({});
+  const [gameLiveness, setGameLiveness] = useState(null);
+  const [gamePublicVotingPower, setGamePublicVotingPower] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [pubkey, setPubkey] = useState('your-public-key'); // Example public key
+  const [pubkey, setPubkey] = useState((Math.floor(Math.random()*1000000)).toString()); // Example public key
 
   useEffect(() => {
     if (page === 'register') {
@@ -55,14 +58,21 @@ const App = () => {
 
                 switch (data.messageType) {
                     case 'RESPOND_SELF': 
-                      setPlayerNumber(data.player);
-                      setCharacter(data.character);
-                      setSelfLiveness(data.liveness);
+                      setPlayerNumber(data.self.player);
+                      setCharacter(data.self.character);
+                      setSelfLiveness(data.self.liveness);
                       // lastRoundMoved;
                       // lastMove;
                     break;
                     case 'RESPOND_GAME_STATE': 
-                      // TODO
+                      setPlayerNumber(data.self.player);
+                      setCharacter(data.self.character);
+                      setSelfLiveness(data.self.liveness);
+                      setGameLiveness(data.self.gameState.map (player=>player.liveness));
+                      setGamePublicVotingPower(data.self.gameState.map (player=>player.publicVotingPower));
+
+                  
+
 
 
                     break;
@@ -87,7 +97,10 @@ const App = () => {
   }
 
   const handleRegister = () => {
-    if (ws.send) ws.send({ready : true});
+    if (ws.send) ws.send(JSON.stringify({
+      ready : true,
+      pubkey    
+    }));
     setPage('waiting');
   };
 
@@ -99,7 +112,11 @@ const App = () => {
   };
 
   const handleNextPage = () => {
-    setPage('game');
+    if (gameLiveness && gamePublicVotingPower) {
+      setPage('game');
+    } else {
+      ws.send('REQUEST_GAME_STATE')
+    }
   };
 
   return (
@@ -134,7 +151,7 @@ const App = () => {
       )}
 
       {page === 'game' && (
-        <GamePage character={characters[playerNumber - 1]} pubkey={pubkey} />
+        <GamePage character={characters[playerNumber - 1]} pubkey={pubkey} socket={ws} gameState={gameState}/>
       )}
     </div>
   );
