@@ -63,6 +63,15 @@
     border: 2px solid #333;
   }
   
+  .image-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3em; /* Adjust the font size to make the X bigger */
+    color: darkred; /* Dark red color */
+  }
+  
   .sign-vote-button {
     margin-top: 20px;
     padding: 20px 40px;

@@ -12,12 +12,13 @@ import character5 from './graphics/character5.jpg';
 const characterImages = [character1, character2, character3, character4, character5];
 
 const GamePage = ({ character, pubkey, cols = 8 }) => {
-  const [PublicVoteData, setPublicVoteData] = useState(Array.from({ length: cols }, () => 0));
+  const [publicVoteData, setPublicVoteData] = useState(Array.from({ length: cols }, () => 0));
   const [secretVoteData, setSecretVoteData] = useState(Array.from({ length: cols }, () => 0));
+  const [liveness, setLiveness] = useState(Array.from({ length: cols }, () => 0));
 
   const handleSignVote = () => {
     // Gather data from all input components
-    const PublicVoteInputData = PublicVoteData.map((data, index) => ({
+    const publicVoteInputData = publicVoteData.map((data, index) => ({
       character: index + 1, // Character number
       data: data // Input data
     }));
@@ -29,7 +30,7 @@ const GamePage = ({ character, pubkey, cols = 8 }) => {
 
     // Send data over WebSocket
     // Replace with your WebSocket logic
-    console.log('Submitting PublicVoteData:', PublicVoteInputData);
+    console.log('Submitting PublicVoteData:', publicVoteInputData);
     console.log('Submitting secretVoteData:', secretVoteInputData);
   };
 
@@ -37,7 +38,7 @@ const GamePage = ({ character, pubkey, cols = 8 }) => {
     const newData =
         (newValue===100)
             ? Array.from({ length: cols }).fill(0) 
-            : [...PublicVoteData];
+            : [...publicVoteData];
     newData[index] = newValue;
     setPublicVoteData(newData);
   };
@@ -48,37 +49,47 @@ const GamePage = ({ character, pubkey, cols = 8 }) => {
     setSecretVoteData(newData);
   };
 
-  const generateGrid = (data, handleClick) => {
-    let grid = [];
-    for (let i = 0; i < 3; i++) {
-      let row = [];
-      for (let j = 0; j < cols; j++) {
-        if (i === 0 && j === 0) {
-          row.push(<div key={`${i}-${j}`} className="empty-cell"></div>);
-        } else if (i === 0) {
-          const image = characterImages[j % characterImages.length];
-          row.push(
-            <div key={`${i}-${j}`} className="top-row">
-              <img src={image} alt="Character" className="character-image" />
-            </div>
-          );
-        } else {
-          const inputRow = i === 1 ? PublicVoteData : secretVoteData;
-          const cellClassName = j === 0 ? `special-cell left-column` : `grid-cell ${i === 2 ? 'hatched-cell' : ''}`;
-          row.push(
-            <div key={`${i}-${j}`} className={cellClassName}>
-              <Input100
-                value={inputRow[j]}
-                onClick={(newValue) => i === 1 ? handlePublicVoteClick(j, newValue) : handleSecretVoteClick(j, newValue)}
-              />
-            </div>
-          );
-        }
+  const generateGrid = () => {
+  let grid = [];
+  for (let i = 0; i < 3; i++) {
+    let row = [];
+    for (let j = 0; j < cols; j++) {
+      if (i === 0 && j === 0) {
+        row.push(<div key={`${i}-${j}`} className="empty-cell"></div>);
+      } else if (i === 0) {
+        const image = characterImages[j % characterImages.length];
+        row.push(
+          <div key={`${i}-${j}`} className="top-row">
+          <div className="character-image-container">
+            <img src={image} alt="Character" className="character-image" />
+            {i === 1 && <div className="image-overlay">X</div>}
+          </div>
+          </div>
+        );
+      } else if (j === 0) {
+        row.push(
+          <div key={`${i}-${j}`} className="special-cell left-column">
+            <Input100Leftover value={i === 1 ? publicVoteData[j] : secretVoteData[j]} />
+          </div>
+        );
+      } else {
+        const inputRow = i === 1 ? publicVoteData : secretVoteData;
+        const cellClassName = i === 2 ? 'hatched-cell' : 'grid-cell';
+        row.push(
+          <div key={`${i}-${j}`} className={cellClassName}>
+            <Input100
+              value={inputRow[j]}
+              onClick={(newValue) => i === 1 ? handlePublicVoteClick(j, newValue) : handleSecretVoteClick(j, newValue)}
+            />
+          </div>
+        );
       }
-      grid.push(<div key={i} className="grid-row">{row}</div>);
     }
-    return grid;
-  };
+    grid.push(<div key={i} className="grid-row">{row}</div>);
+  }
+  return grid;
+};
+
 
   return (
     <div className="game-page">

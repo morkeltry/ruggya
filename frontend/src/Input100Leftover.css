@@ -1,6 +1,11 @@
-.cartoonish-number {
-    font-size: 3em;
-    color: #ff69b4; /* Hot pink color */
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-  }
-  
+.leftover-number {
+  font-size: 4em;
+  color: darkred;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+}
+
+.left-column .leftover-number {
+  text-shadow: none;
+}

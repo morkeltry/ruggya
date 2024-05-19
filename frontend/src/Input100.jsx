@@ -12,7 +12,7 @@ const Input100 = ({ value=0, onClick }) => {
 
   return (
     <div className="cartoonish-number" onClick={handleClick}>
-      {value}
+      {value }
     </div>
   );
 };

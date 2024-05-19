@@ -1,6 +1,8 @@
 .cartoonish-number {
-    font-size: 3em;
-    color: #ff4500; /* Orange red color */
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-  }
-  
+  font-size: 4em;
+  color: red;
+  font-weight: bold;
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff; /* White border */
+  cursor: pointer;
+  user-select: none;
+}
