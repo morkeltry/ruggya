@@ -12,7 +12,7 @@ const characters = [Character1, Character2, Character3, Character4, Character5];
 
 const App = () => {
   // page = 'register' | 'waiting' | 'character' | 'game' 
-  const [page, setPage] = useState('game');
+  const [page, setPage] = useState('register');
   const [ws, setWs] = useState(null);
   const [playerNumber, setPlayerNumber] = useState(1);
   const [showModal, setShowModal] = useState(false);
@@ -20,7 +20,7 @@ const App = () => {
 
   useEffect(() => {
     if (page === 'register') {
-      const socket = new WebSocket('wss://your-websocket-server-url');
+      const socket = new WebSocket('wss://127.0.0.1:3000');
       socket.onopen = () => console.log('WebSocket connected');
       socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
