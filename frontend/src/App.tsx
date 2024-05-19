@@ -7,6 +7,7 @@ import Character3 from './graphics/character3.jpg';
 import Character4 from './graphics/character4.jpg';
 import Character5 from './graphics/character5.jpg';
 import GamePage from './GamePage'; // Assume this is your game page component
+// import handleWs from './handleWs';
 
 const characters = [Character1, Character2, Character3, Character4, Character5];
 
@@ -14,26 +15,72 @@ const App = () => {
   // page = 'register' | 'waiting' | 'character' | 'game' 
   const [page, setPage] = useState('register');
   const [ws, setWs] = useState(null);
-  const [playerNumber, setPlayerNumber] = useState(1);
+  const [playerNumber, setPlayerNumber] = useState(-1);
+  const [character, setCharacter] = useState("");
+  const [selfLiveness, setSelfLiveness] = useState(-1);
   const [showModal, setShowModal] = useState(false);
   const [pubkey, setPubkey] = useState('your-public-key'); // Example public key
 
   useEffect(() => {
     if (page === 'register') {
-      const socket = new WebSocket('wss://127.0.0.1:3000');
-      socket.onopen = () => console.log('WebSocket connected');
-      socket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        setPlayerNumber(data.playerNumber);
-        setPage('character');
-      };
-      // setWs(socket);
+      //set up ws:// connection on register page, it should be maintained until end of game.
+      const socket = new WebSocket('ws://127.0.0.1:4444');
+      handleWs(socket);
 
-      return () => {
-        socket.close();
-      };
+    
     }
   }, [page]);
+
+  const handleWs = socket => {
+
+    socket.onopen = () => console.log('WebSocket connected');
+
+    socket.onmessage = (event) => {
+        console.log (event, event.data);
+        switch (event.data) {
+            case 'REQUEST_PUBKEY':
+              console.log('REQUEST_PUBKEY');
+              socket.send({pubkey});
+              console.log('pubkey sent.');
+            break;
+            case 'WAITING':
+              console.log('WAITING');
+            // case '':
+            //   console.log('');
+            break;
+            default: {
+                console.log("Got WS data that's probably JSON");
+                console.log(event.data);
+                const data = JSON.parse(event.data);
+
+                switch (data.messageType) {
+                    case 'RESPOND_SELF': 
+                      setPlayerNumber(data.player);
+                      setCharacter(data.character);
+                      setSelfLiveness(data.liveness);
+                      // lastRoundMoved;
+                      // lastMove;
+                    break;
+                    case 'RESPOND_GAME_STATE': 
+
+
+                    break;
+                    default:
+
+
+                    break
+                     
+                }
+                // setPlayerNumber(data.playerNumber);
+                // setPage('character');
+            }
+        }
+    };
+    
+    return () => {
+        socket.close();
+    };
+  }
 
   const handleRegister = () => {
     setPage('waiting');
