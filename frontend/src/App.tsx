@@ -68,8 +68,8 @@ const App = () => {
                       setPlayerNumber(data.self.player);
                       setCharacter(data.self.character);
                       setSelfLiveness(data.self.liveness);
-                      setGameLiveness(data.self.gameState.map (player=>player.liveness));
-                      setGamePublicVotingPower(data.self.gameState.map (player=>player.publicVotingPower));
+                      setGameLiveness(data.gameState.map (player=>player.liveness));
+                      setGamePublicVotingPower(data.gameState.map (player=>player.publicVotingPower));
 
                   
 

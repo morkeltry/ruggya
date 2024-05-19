@@ -161,6 +161,7 @@ const handleMessage = (message, client)=> {
           client.player.ready = true
         } else {
           client.send('REQUEST_PUBKEY');
+          console.log('REQUEST_PUBKEY');
         };
       }
 
@@ -168,14 +169,22 @@ const handleMessage = (message, client)=> {
         checkReady();
     }
   } catch (e) {
+    console.log('(errored):' );
+    console.log(Object.keys(message));
+    console.log('message.join()', Array.from(message).join());
     console.log(e);
   }
 
 }
 
 const checkReady = ()=> {
+  console.log(`\n\n\n\nClients: ${wss.clients.size }`);
+  console.log(`Ready: ${Array.from(wss.clients).filter(client => client.player.ready).length}`);
+  console.log(`\n\nUnready: `,Array.from(wss.clients).filter(client => !client.player.ready).map(client=>client.player));
+  console.log(`\n\nReady: `,Array.from(wss.clients).filter(client => client.player.ready).map(client=>client.player));
+
   if (wss.clients.size < GAME_SIZE
-    || Array.from(wss.clients).some(client => !client.player.ready || !client.player.pubkey || !client.player.registered))
+    || Array.from(wss.clients).filter(client => client.player.ready && client.player.pubkey).length < GAME_SIZE)
       return false
   else
     initiateGame();  
@@ -186,7 +195,7 @@ const initiateGame = ()=> {
   const players = clients.length;
 
   // choose players/3 werewolves
-  const werewolves = WEREWOLVES(players);
+  let werewolves = WEREWOLVES(players);
   let werewolvesLeft = werewolves;
   while (werewolves--) {
     const idx = Math.floor(Math.random () * players);
