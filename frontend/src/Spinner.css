@@ -1,0 +1,15 @@
+.spinner {
+    width: 150px; /* Larger size */
+    height: 150px; /* Larger size */
+    border: 16px solid transparent; /* No background */
+    border-top: 16px solid purple; /* Purple color for one half */
+    border-right: 16px solid orange; /* Orange color for the other half */
+    border-radius: 50%; /* Make it circular */
+    animation: spin 1s linear infinite; /* Rotating animation */
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
