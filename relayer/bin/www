@@ -195,7 +195,7 @@ const initiateGame = ()=> {
   const players = clients.length;
 
   Array.from(wss.clients)
-    .filter(client => client.player.ready)
+    .filter(client => !client.player.ready)
     .forEach(client=> {
       client.close();
     })
