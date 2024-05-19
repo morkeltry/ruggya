@@ -7,7 +7,6 @@ import Character3 from './graphics/character3.jpg';
 import Character4 from './graphics/character4.jpg';
 import Character5 from './graphics/character5.jpg';
 import GamePage from './GamePage'; // Assume this is your game page component
-// import handleWs from './handleWs';
 
 const characters = [Character1, Character2, Character3, Character4, Character5];
 
