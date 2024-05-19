@@ -13,7 +13,7 @@ const characters = [Character1, Character2, Character3, Character4, Character5];
 const App = () => {
   // page = 'register' | 'waiting' | 'character' | 'game' 
   const [page, setPage] = useState('register');
-  const [ws, setWs] = useState(null);
+  const [ws, setWs] = useState({send: ()=>'ws not ready'});
   const [playerNumber, setPlayerNumber] = useState(-1);
   const [character, setCharacter] = useState("");
   const [selfLiveness, setSelfLiveness] = useState(-1);
@@ -31,6 +31,7 @@ const App = () => {
   }, [page]);
 
   const handleWs = socket => {
+    setWs(socket);
 
     socket.onopen = () => console.log('WebSocket connected');
 
@@ -61,8 +62,12 @@ const App = () => {
                       // lastMove;
                     break;
                     case 'RESPOND_GAME_STATE': 
+                      // TODO
 
 
+                    break;
+                    case 'RESPOND_SHOW_POWERS': 
+                      handleSeePowers(data.powers);
                     break;
                     default:
 
@@ -82,11 +87,12 @@ const App = () => {
   }
 
   const handleRegister = () => {
+    if (ws.send) ws.send({ready : true});
     setPage('waiting');
   };
 
-  const handleSeePowers = () => {
-    setShowModal(true);
+  const handleSeePowers = (powers) => {
+    setShowModal(powers);
     setTimeout(() => {
       setShowModal(false);
     }, 3000);
