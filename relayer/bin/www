@@ -191,8 +191,14 @@ const checkReady = ()=> {
 }
 
 const initiateGame = ()=> {
-  const clients = Array.from(wss.clients)
+  const clients = Array.from(wss.clients).filter(client => client.player.ready).map(client=>client.player)
   const players = clients.length;
+
+  Array.from(wss.clients)
+    .filter(client => client.player.ready)
+    .forEach(client=> {
+      client.close();
+    })
 
   // choose players/3 werewolves
   let werewolves = WEREWOLVES(players);

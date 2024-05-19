@@ -70,11 +70,9 @@ const App = () => {
                       setSelfLiveness(data.self.liveness);
                       setGameLiveness(data.gameState.map (player=>player.liveness));
                       setGamePublicVotingPower(data.gameState.map (player=>player.publicVotingPower));
-
-                  
-
-
-
+                      if (page==='waiting') {
+                        setPage('character');
+                      }
                     break;
                     case 'RESPOND_SHOW_POWERS': 
                       handleSeePowers(data.powers);
