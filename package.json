@@ -6,10 +6,9 @@
   "scripts": {
     "postinstall": "cd contracts && npm install && cd ../frontend && npm install",
     "test": "cd contracts && npx hardhat test",
-    "deploy-contracts": "cd contracts && npx hardhat run --network localhost scripts/deploy.ts",
-    "deploy": "cd relayer && npm install",
+    "deploy": "cd contracts && npx hardhat run --network localhost scripts/deploy.ts",
     "deploy-sepolia": "cd contracts && npx hardhat run --network sepolia scripts/deploy.ts",
-    "start": "cd relayer && npm start"
+    "start": "cd relayer && npm install -y &&npm start"
   },
   "author": "",
   "license": "ISC",
