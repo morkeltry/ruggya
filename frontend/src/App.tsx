@@ -43,7 +43,7 @@ const App = () => {
         switch (event.data) {
             case 'REQUEST_PUBKEY':
               console.log('REQUEST_PUBKEY');
-              socket.send({pubkey});
+              socket.send(JSON.stringify({pubkey}));
               console.log('pubkey sent.');
             break;
             case 'WAITING':
