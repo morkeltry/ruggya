@@ -13,6 +13,8 @@ var WebSocket = require('ws');
 const GAME_SIZE = 5;
 const WEREWOLVES = players => Math.floor(players/3 + 0.5);
 
+const players=[];
+
 const playerObj = {
   connected: false,
   registered: false,
@@ -25,6 +27,13 @@ const playerObj = {
   lastMove: null
 };
 
+const gameObj = {
+  completedRound : 0,
+  previousMoves : [],
+  thisRoundMoves : [],
+  players: [],
+};
+
 const characters = [
   'Sam Bankman-Fried', 'Gary Gensler', 'Changpeng Zhao', 'Three Arrows Capital', 'Jerome Powell'
 ];
@@ -35,7 +44,7 @@ let gameOn = false;
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '4444');
 app.set('port', port);
 
 /**
@@ -52,6 +61,7 @@ const MAX_CONNECTIONS = 16;
 let activeConnections = 0;
 
 wss.on('connection', function connection(ws) {
+  console.log('Connection attempted');
   if (activeConnections >= MAX_CONNECTIONS) {
     ws.close(1008, 'Too many connections'); // 1008 is a policy violation
     return;
@@ -68,11 +78,14 @@ wss.on('connection', function connection(ws) {
 
   ws.on('message', function incoming(message) {
     console.log('received: %s', message);
-    handleMessage(message, ws);
+    handleMessage(message.toString(), ws);
   });
 
   ws.player = Object.assign({}, playerObj);
   ws.player.connected = true;
+  ws.player.number = players.length;
+  players.push(ws.player);
+
   ws.send ('REQUEST_PUBKEY');
 });
 
@@ -93,40 +106,16 @@ server.on('listening', onListening);
 
 const handleMessage = (message, client)=> {
   console.log ('Got a message:', message);
-  console.log ('Client state:', sender.player);
-
-  const msgJson = JSON.parse(message);
-  if (msgJson.pubkey) {
-    client.player.pubkey = msgJson.pubkey;
-    client.send('WAITING');
-    // TODO: Check chain for player and update ws.player.registered if they are
-    // then call checkReady()
-  }
-  if (msgJson.ready) {
-    if (client.player.registered && client.player.pubkey) {
-      client.player.ready = true;
-    } else {
-      // Uncomment (and implement!) to require registration on contract before playing
-      // TODO: await check chain for player and update ws.player.registered if they are.
-      if (client.player.pubkey) {
-        client.player.ready = true
-      } else {
-        client.send('REQUEST_PUBKEY');
-      };
-    }
-
-    if (client.player.ready)
-      checkReady();
-  }
+  console.log ('Client state:', client.player);
   
   if (message==="REQUEST_SELF") {
     if (gameOn) {
       client.send({
+        messageType: 'RESPOND_SELF',
         player: client.number,
         character: character[client.number],
         pubkey: client.pubkey,
         liveness: client.liveness,
-        powers: client.powers,
         lastRoundMoved: client.lastRoundMoved,
         lastMove: client.lastMove
       })
@@ -140,10 +129,47 @@ const handleMessage = (message, client)=> {
       // TODO: all last moves
       // TODO: players liveness
       client.send({
+        messageType: 'RESPOND_GAME_STATE',
+        gameState: initialGameState,
+        self: {
+          pubkey: client.pubkey,
+          player: client.number,
+          liveness: client.liveness,
+          character: characters[client.number]
+        }
 
       })
     };
   };
+
+  try {
+    const msgJson = JSON.parse(message);
+    console.log(msgJson)
+    if (msgJson.pubkey) {
+      client.player.pubkey = msgJson.pubkey;
+      client.send('WAITING');
+      // TODO: Check chain for player and update ws.player.registered if they are
+      // then call checkReady()
+    }
+    if (msgJson.ready) {
+      if (client.player.registered && client.player.pubkey) {
+        client.player.ready = true;
+      } else {
+        // Uncomment (and implement!) to require registration on contract before playing
+        // TODO: await check chain for player and update ws.player.registered if they are.
+        if (client.player.pubkey) {
+          client.player.ready = true
+        } else {
+          client.send('REQUEST_PUBKEY');
+        };
+      }
+
+      if (client.player.ready)
+        checkReady();
+    }
+  } catch (e) {
+    console.log(e);
+  }
 
 }
 
@@ -184,11 +210,13 @@ const initiateGame = ()=> {
   })
   clients.forEach( client => {
     client.send(JSON.stringify({
+      messageType: "RESPOND_GAME_STATE",
       gameState: initialGameState,
       self: {
         pubkey: client.pubkey,
-        number: client.number,
+        player: client.number,
         liveness: client.liveness,
+        character: characters[client.number]
         // we don't send (secret) powers to sit around in frontend state, to prevent coercion
       }
     }))
@@ -224,6 +252,7 @@ function normalizePort(val) {
  */
 
 function onError(error) {
+  console.log('got some kind of error')
   if (error.syscall !== 'listen') {
     throw error;
   }
