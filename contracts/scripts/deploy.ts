@@ -1,27 +1,37 @@
 import hre from "hardhat";
+import { ethers } from "hardhat";
+
 
 async function main() {
   const Verifier = await hre.ethers.getContractFactory("Groth16Verifier");
   console.log('deploying verifier');
-  const verifier = await Verifier.deploy();
+
+  const verifier = await Verifier.deploy(
+    {
+      maxFeePerGas: (await ethers.provider.getFeeData()).maxFeePerGas
+    }
+  );
   await verifier.waitForDeployment();
-  const RsaChallenge = await hre.ethers.getContractFactory("RsaChallenge");
-  console.log('deploying challenge contract');
-  const rsaChallenge = await RsaChallenge.deploy(await verifier.getAddress());
-  await rsaChallenge.waitForDeployment();
-  console.log('challenge 33');
-  var tx = await rsaChallenge.newChallenge(33, {gasLimit: 500000});
-  await tx.wait();
-  console.log('challenge 91');
-  var tx = await rsaChallenge.newChallenge(91, {gasLimit: 500000});
-  await tx.wait();
-  console.log('challenge 100');
-  var tx = await rsaChallenge.newChallenge(100, {gasLimit: 500000});
-  await tx.wait();
-  console.log('challenge 131');
-  var tx = await rsaChallenge.newChallenge(131, {gasLimit: 500000});
-  await tx.wait();
-  console.log("Contract deployed to:", await rsaChallenge.getAddress());
+  const Ruggya = await hre.ethers.getContractFactory("Ruggya");
+  console.log('deploying Ruggya contract');
+
+  const pubKeys = [
+    "123456",
+    "789012345",
+    "67890123",
+    "4567890123",
+    "4567890123456789",
+  ]
+  const ruggya = await Ruggya.deploy(
+    await verifier.getAddress(),
+    pubKeys,
+    {
+      maxFeePerGas: (await ethers.provider.getFeeData()).maxFeePerGas
+    }
+  );
+  await ruggya.waitForDeployment();
+
+  console.log("Contract deployed to:", await ruggya.getAddress());
 }
 
 main()
