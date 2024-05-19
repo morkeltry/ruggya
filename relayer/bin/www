@@ -191,20 +191,21 @@ const checkReady = ()=> {
 }
 
 const initiateGame = ()=> {
-  const clients = Array.from(wss.clients).filter(client => client.player.ready).map(client=>client.player)
-  const players = clients.length;
-
   Array.from(wss.clients)
     .filter(client => !client.player.ready)
     .forEach(client=> {
       client.close();
     })
 
+  
+  const clients = Array.from(wss.clients).filter(client => client.player.ready);
+  const players = clients.map(client=>client.player);
+  
   // choose players/3 werewolves
-  let werewolves = WEREWOLVES(players);
+  let werewolves = WEREWOLVES(players.length);
   let werewolvesLeft = werewolves;
   while (werewolves--) {
-    const idx = Math.floor(Math.random () * players);
+    const idx = Math.floor(Math.random () * players.length);
     if (!clients[idx].powers) {
       clients[idx].powers = { secretVotePower: 100 }
     } else {
@@ -214,18 +215,21 @@ const initiateGame = ()=> {
 
   // set initial liveness
   clients.forEach( client => {
+    console.log(client)
     client.liveness = 100;
   });
 
   // wake players
-  const initialGameState = new Array(players).fill({
+  const initialGameState = new Array(players.length).fill({
     liveness : 100,
     publicVotingPower : 100
 
   })
   clients.forEach( client => {
+    console.log ('client', client);
+
     client.send(JSON.stringify({
-      messageType: "RESPOND_GAME_STATE",
+      messageType: 'RESPOND_GAME_STATE',
       gameState: initialGameState,
       self: {
         pubkey: client.pubkey,

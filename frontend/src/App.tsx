@@ -11,7 +11,7 @@ import GamePage from './GamePage'; // Assume this is your game page component
 const characters = [Character1, Character2, Character3, Character4, Character5];
 
 const App = () => {
-  // page = 'register' | 'waiting' | 'character' | 'game' 
+  // page = 'waiting' | 'register' | 'character' | 'game' 
   const [page, setPage] = useState('register');
   const [ws, setWs] = useState({send: msg => 'ws not ready'});
   const [playerNumber, setPlayerNumber] = useState(-1);
@@ -70,7 +70,9 @@ const App = () => {
                       setSelfLiveness(data.self.liveness);
                       setGameLiveness(data.gameState.map (player=>player.liveness));
                       setGamePublicVotingPower(data.gameState.map (player=>player.publicVotingPower));
-                      if (page==='waiting') {
+                      console.log(page)
+                      if (page==='register') {
+                        console.log("setPage('character')")
                         setPage('character');
                       }
                     break;
