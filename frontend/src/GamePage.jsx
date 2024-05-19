@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './GamePage.css';
-import CartoonishNumber from './CartoonishNumber';
-import CartoonishNumberSpecial from './CartoonishNumberSpecial';
+import Input100 from './Input100';
+import Input100Leftover from './Input100Leftover';
 
 import character1 from './graphics/character1.jpg';
 import character2 from './graphics/character2.jpg';
@@ -12,28 +12,43 @@ import character5 from './graphics/character5.jpg';
 const characterImages = [character1, character2, character3, character4, character5];
 
 const GamePage = ({ character, pubkey, cols = 8 }) => {
-  const [inputsData, setInputsData] = useState(Array.from({ length: cols }, () => ''));
-  
+  const [PublicVoteData, setPublicVoteData] = useState(Array.from({ length: cols }, () => 0));
+  const [secretVoteData, setSecretVoteData] = useState(Array.from({ length: cols }, () => 0));
+
   const handleSignVote = () => {
     // Gather data from all input components
-    const inputData = inputsData.map((data, index) => ({
+    const PublicVoteInputData = PublicVoteData.map((data, index) => ({
+      character: index + 1, // Character number
+      data: data // Input data
+    }));
+
+    const secretVoteInputData = secretVoteData.map((data, index) => ({
       character: index + 1, // Character number
       data: data // Input data
     }));
 
     // Send data over WebSocket
     // Replace with your WebSocket logic
-    console.log('Sending data:', inputData);
+    console.log('Submitting PublicVoteData:', PublicVoteInputData);
+    console.log('Submitting secretVoteData:', secretVoteInputData);
   };
 
-  const handleInputChange = (index, value) => {
-    // Update input data
-    const newData = [...inputsData];
-    newData[index] = value;
-    setInputsData(newData);
+  const handlePublicVoteClick = (index, newValue) => {
+    const newData =
+        (newValue===100)
+            ? Array.from({ length: cols }).fill(0) 
+            : [...PublicVoteData];
+    newData[index] = newValue;
+    setPublicVoteData(newData);
   };
 
-  const generateGrid = () => {
+  const handleSecretVoteClick = (index, newValue) => {
+    const newData = [...secretVoteData];
+    newData[index] = newValue;
+    setSecretVoteData(newData);
+  };
+
+  const generateGrid = (data, handleClick) => {
     let grid = [];
     for (let i = 0; i < 3; i++) {
       let row = [];
@@ -47,22 +62,15 @@ const GamePage = ({ character, pubkey, cols = 8 }) => {
               <img src={image} alt="Character" className="character-image" />
             </div>
           );
-        } else if (i >= 1 && j === 0) {
-          row.push(
-            <div key={`${i}-${j}`} className={`special-cell left-column`}>
-              <CartoonishNumberSpecial />
-            </div>
-          );
-        } else if (i === 2) {
-          row.push(
-            <div key={`${i}-${j}`} className={`hatched-cell ${j === 0 ? 'left-column' : ''}`}>
-              <CartoonishNumber onChange={(value) => handleInputChange(j, value)} />
-            </div>
-          );
         } else {
+          const inputRow = i === 1 ? PublicVoteData : secretVoteData;
+          const cellClassName = j === 0 ? `special-cell left-column` : `grid-cell ${i === 2 ? 'hatched-cell' : ''}`;
           row.push(
-            <div key={`${i}-${j}`} className={`grid-cell ${j === 0 ? 'left-column' : ''}`}>
-              <CartoonishNumber onChange={(value) => handleInputChange(j, value)} />
+            <div key={`${i}-${j}`} className={cellClassName}>
+              <Input100
+                value={inputRow[j]}
+                onClick={(newValue) => i === 1 ? handlePublicVoteClick(j, newValue) : handleSecretVoteClick(j, newValue)}
+              />
             </div>
           );
         }
@@ -71,7 +79,6 @@ const GamePage = ({ character, pubkey, cols = 8 }) => {
     }
     return grid;
   };
-  
 
   return (
     <div className="game-page">

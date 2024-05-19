@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CartoonishNumberSpecial = ({ value, onClick, onKeyDown, onBlur, onChange }) => {
+const Input100Leftover = ({ value, onClick, onKeyDown, onBlur, onChange }) => {
   return (
     <input
       type="text"
@@ -16,4 +16,4 @@ const CartoonishNumberSpecial = ({ value, onClick, onKeyDown, onBlur, onChange }
   );
 };
 
-export default CartoonishNumberSpecial;
+export default Input100Leftover;
