@@ -1,7 +1,7 @@
 # Ruggy-a
 
 (It's like Mafia)
-A multiplayer selective infornmatoin disclosure game,
+A multiplayer selective information disclosure game,
 repo based on https://github.com/Cardinal-Cryptography/zk-dapp-template
 
 
@@ -88,6 +88,7 @@ cd ..
 ```
 
 WEIRD HACK WE HAVEN'T YET GOT A BETTER WAY TO DO
+
 `code ../node_modules/ffjavascript/build/main.cjs`
 and at L4975 replace the lines 
 >        const nPoints = Math.floor(buffBases.byteLength / sGIn);
@@ -105,9 +106,14 @@ INPUT SPECIFIC USAGE
 npx snarkjs groth16 prove setup/state_transition_0001.zkey state_transition_js/witness.wtns proof.json public.json
 ```
 
-## Usage
+## Usage - play
 
 1. Run `npm install`.
-2. Put private key for deployment account in `contracts/hardhat.config.ts` - IF delopying on a non-local network
-3. From root directory, execute `npm run deploy` to deploy smart contracts on-chain. You will get contract address.
-4. Put contract address in `frontend/src/RsaChallengeComponent.tsx`. Execute `npm run start`.
+2. `cd relayer && npm run start`
+3. (in another terminal) `cd frontend && npm run start`
+
+
+## Usage - redelpoy
+1. Put private key for deployment account in `contracts/hardhat.config.ts` - IF delopying on a non-local network
+2. From root directory, execute `npm run deploy` to deploy smart contracts on-chain. You will get contract address.
+3. (TODO : implement relayer contract interactions)
