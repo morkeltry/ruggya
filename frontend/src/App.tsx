@@ -108,7 +108,7 @@ const App = () => {
     setShowModal(powers);
     setTimeout(() => {
       setShowModal(false);
-    }, 3000);
+    }, 500);
   };
 
   const handleNextPage = () => {
@@ -138,12 +138,12 @@ const App = () => {
           <img src={characters[(playerNumber - 1)% characters.length]} className="character-image" alt={`Character ${playerNumber}`} />
           <button onClick={()=>{ ws.send('REQUEST_SPECIAL_POWERS')}} className="red-button">See Special Powers</button>
           <div className="green-arrow" onClick={handleNextPage}>&#x2192;</div>
-          {showModal && (
+          {showModal && Object.keys(showModal).length && (
             <div className="modal">
               <div className="modal-content">
-                <p>Special Power 1</p>
-                <p>Special Power 2</p>
-                <p>Special Power 3</p>
+                <p>{ JSON.stringify(showModal)
+                      .replace(/[\"\{\}]/gm, ' ')
+                }</p>
               </div>
             </div>
           )}

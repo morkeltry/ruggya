@@ -77,7 +77,10 @@ wss.on('connection', function connection(ws) {
   ws.player.number = players.length;
   players.push(ws.player);
 
-  ws.send ('REQUEST_PUBKEY');
+  ws.send ( gameOn
+    ? 'GAME_ALREADY_IN_PROGRESS'    
+    : 'REQUEST_PUBKEY'
+  );
 });
 
 
@@ -197,7 +200,7 @@ const initiateGame = ()=> {
 
   const clients = Array.from(wss.clients).filter(client => client.player.ready);
   const players = clients.map(client=>client.player);
-  console.log('Game starting. Players: ', players.map(player=>player.number).join(', '));
+  console.log('\n\nGame starting. Players: ', players.map(player=>player.number).join(', '),'\n\n');
   
   // choose players/3 werewolves
   let werewolves = new Set();
