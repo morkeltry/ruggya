@@ -36,6 +36,8 @@ VOTES (per player) :
   <td colspan="6" align="center">signature</td>
 </tr>
 
+______________________
+
 
 STATE TRANSITION CONSTRAINTS:
 * For each player pn:
