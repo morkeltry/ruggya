@@ -1,9 +1,5 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
-
 const { log } = require('console');
 var app = require('../app');
 var debug = require('debug')('relayer:server');
@@ -40,26 +36,21 @@ const characters = [
 
 let gameOn = false;
 
-/**
- * Get port from environment and store in Express.
- */
 
+// start server
 var port = normalizePort(process.env.PORT || '4444');
 app.set('port', port);
-
-/**
- * Create HTTP server.
- */
-
 var server = http.createServer(app);
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
 
-/**
- * Create WebSocket server.
- */
+// Create WebSocket server.
 const wss = new WebSocket.Server({ server, clientTracking: true });
 const MAX_CONNECTIONS = 16;
 let activeConnections = 0;
 
+// onconnect, onmessage listeners
 wss.on('connection', function connection(ws) {
   console.log('Connection attempted');
   if (activeConnections >= MAX_CONNECTIONS) {
@@ -88,19 +79,6 @@ wss.on('connection', function connection(ws) {
 
   ws.send ('REQUEST_PUBKEY');
 });
-
-
-
-
-
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
 
 
 
@@ -179,11 +157,16 @@ const handleMessage = (message, client)=> {
     }
   } catch (e) {
     console.log('(errored):' );
-    console.log(Object.keys(message));
-    console.log('message.join()', Array.from(message).join());
+    if (e.message.indexOf('JSON.,parse')>-1) {
+      console.log('Unhandled string message');
+    }
+    if (message==='[object Object]') {
+      console.log("WS message appears to be '[object Object]'. Mostly likely due to incorrect stringification of Array/ Object on client side")
+    } else {
+    console.log('message:', message);
     console.log(e);
+    }
   }
-
 }
 
 const checkReady = ()=> {
@@ -212,41 +195,29 @@ const initiateGame = ()=> {
     return
   }
 
-  
   const clients = Array.from(wss.clients).filter(client => client.player.ready);
   const players = clients.map(client=>client.player);
   console.log('Game starting. Players: ', players.map(player=>player.number).join(', '));
   
   // choose players/3 werewolves
-  let werewolves = WEREWOLVES(players.length);
-  let werewolvesLeft = werewolves;
-  // while (werewolves--) {
-  //   const idx = Math.floor(Math.random () * 2.5);
-  //   if (!0) {
-  //     clients[werewolves].player.powers = { secretVotePower: 100 }
-  //   } else {
-  //     werewolves++;
-  //   }
-  players[2].powers = { secretVotePower: 100 }
-  players[4].powers = { secretVotePower: 100 }
-
-  
-
-  // set initial liveness
+  let werewolves = new Set();
+  while (werewolves.size < WEREWOLVES(players.length)) {
+    werewolves.add(Math.floor(Math.random () * players.length));
+  }
+  werewolves.forEach(idx=> players[idx].powers = { secretVotePower: 100 } );
+    
+  // set initial liveness & publicVotingPower - same for everyone
   players.forEach( player => {
     console.log('player', player)
     player.liveness = 100;
   });
-
-  // wake players
   const initialGameState = new Array(players.length).fill({
     liveness : 100,
     publicVotingPower : 100
-
   })
-  clients.forEach( client => {
-    console.log ('client', client);
 
+  // wake players
+  clients.forEach( client => {
     client.send(JSON.stringify({
       messageType: 'RESPOND_GAME_STATE',
       gameState: initialGameState,
@@ -264,11 +235,7 @@ const initiateGame = ()=> {
 }
 
 
-
-/**
- * Normalize a port into a number, string, or false.
- */
-
+// Normalize a port into a number, string, or false.
 function normalizePort(val) {
   var port = parseInt(val, 10);
 
@@ -285,10 +252,7 @@ function normalizePort(val) {
   return false;
 }
 
-/**
- * Event listener for HTTP server "error" event.
- */
-
+// Event listener for HTTP server "error" event.
 function onError(error) {
   console.log('got some kind of error')
   if (error.syscall !== 'listen') {
@@ -314,10 +278,7 @@ function onError(error) {
   }
 }
 
-/**
- * Event listener for HTTP server "listening" event.
- */
-
+// Event listener for HTTP server "listening" event.
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'
