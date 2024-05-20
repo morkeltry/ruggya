@@ -38,10 +38,10 @@ VOTES (per player) :
 
 
 STATE TRANSITION CONSTRAINTS:
-. For each player pn:
-. Sum (1<=v<=5, KPnv) <= Pn
-. Sum (1<=v<=5, SPnv) <= Sn
-. Vote is signed
+* For each player pn:
+* Sum (1<=v<=5, KPnv) <= Pn
+* Sum (1<=v<=5, SPnv) <= Sn
+* Vote is signed
 
 Constraints can be added where other roles are permitted, so long as they can be expressed as vector arithmetic on elements in these data structures.
 
