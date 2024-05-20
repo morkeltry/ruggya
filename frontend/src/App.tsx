@@ -135,8 +135,8 @@ const App = () => {
 
       {page === 'character' && playerNumber !== null && (
         <div className="centered">
-          <img src={characters[playerNumber - 1]} className="character-image" alt={`Character ${playerNumber}`} />
-          <button onClick={handleSeePowers} className="red-button">See Special Powers</button>
+          <img src={characters[(playerNumber - 1)% characters.length]} className="character-image" alt={`Character ${playerNumber}`} />
+          <button onClick={()=>{ ws.send('REQUEST_SPECIAL_POWERS')}} className="red-button">See Special Powers</button>
           <div className="green-arrow" onClick={handleNextPage}>&#x2192;</div>
           {showModal && (
             <div className="modal">
