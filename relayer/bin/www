@@ -22,7 +22,7 @@ const playerObj = {
   pubkey: null,
   number: -1,
   liveness: null,
-  powers: null,
+  powers: {},
   lastRoundMoved: -1,
   lastMove: null
 };
@@ -124,6 +124,7 @@ const handleMessage = (message, client)=> {
 
   if (message==="REQUEST_GAME_STATE") {
     if (gameOn) {
+      Array.from(wss.clients).forEach((client, idx) => {client.number=idx })
       const playerNumbers =  Array.from(wss.clients).map(client => client.number);
       // TODO : lastFullRound
       // TODO: all last moves
@@ -141,6 +142,14 @@ const handleMessage = (message, client)=> {
       })
     };
   };
+
+  if (message==="REQUEST_SPECIAL_POWERS") {
+    client.send(JSON.stringify({
+      messageType: 'RESPOND_SHOW_POWERS',
+      powers: client.player.powers
+    }));
+    return;
+  }
 
   try {
     const msgJson = JSON.parse(message);
@@ -178,16 +187,18 @@ const handleMessage = (message, client)=> {
 }
 
 const checkReady = ()=> {
-  console.log(`\n\n\n\nClients: ${wss.clients.size }`);
-  console.log(`Ready: ${Array.from(wss.clients).filter(client => client.player.ready).length}`);
-  console.log(`\n\nUnready: `,Array.from(wss.clients).filter(client => !client.player.ready).map(client=>client.player));
-  console.log(`\n\nReady: `,Array.from(wss.clients).filter(client => client.player.ready).map(client=>client.player));
+  // console.log(`\n\n\n\nClients: ${wss.clients.size }`);
+  // console.log(`Ready: ${Array.from(wss.clients).filter(client => client.player.ready).length}`);
+  // console.log(`\n\nUnready: `,Array.from(wss.clients).filter(client => !client.player.ready).map(client=>client.player));
+  // console.log(`\n\nReady: `,Array.from(wss.clients).filter(client => client.player.ready).map(client=>client.player));
 
   if (wss.clients.size < GAME_SIZE
     || Array.from(wss.clients).filter(client => client.player.ready && client.player.pubkey).length < GAME_SIZE)
       return false
   else
     initiateGame();  
+    // NB checkReady() would return with undefined without initiating game if 
+    // there are somehow < GAME_SIZE clients still open after unready ones are closed.
 }
 
 const initiateGame = ()=> {
@@ -197,26 +208,34 @@ const initiateGame = ()=> {
       client.close();
     })
 
+  if (wss.clients.length < GAME_SIZE) {
+    return
+  }
+
   
   const clients = Array.from(wss.clients).filter(client => client.player.ready);
   const players = clients.map(client=>client.player);
+  console.log('Game starting. Players: ', players.map(player=>player.number).join(', '));
   
   // choose players/3 werewolves
   let werewolves = WEREWOLVES(players.length);
   let werewolvesLeft = werewolves;
-  while (werewolves--) {
-    const idx = Math.floor(Math.random () * players.length);
-    if (!clients[idx].powers) {
-      clients[idx].powers = { secretVotePower: 100 }
-    } else {
-      werewolves++;
-    }
-  }
+  // while (werewolves--) {
+  //   const idx = Math.floor(Math.random () * 2.5);
+  //   if (!0) {
+  //     clients[werewolves].player.powers = { secretVotePower: 100 }
+  //   } else {
+  //     werewolves++;
+  //   }
+  players[2].powers = { secretVotePower: 100 }
+  players[4].powers = { secretVotePower: 100 }
+
+  
 
   // set initial liveness
-  clients.forEach( client => {
-    console.log(client)
-    client.liveness = 100;
+  players.forEach( player => {
+    console.log('player', player)
+    player.liveness = 100;
   });
 
   // wake players
@@ -232,10 +251,10 @@ const initiateGame = ()=> {
       messageType: 'RESPOND_GAME_STATE',
       gameState: initialGameState,
       self: {
-        pubkey: client.pubkey,
-        player: client.number,
-        liveness: client.liveness,
-        character: characters[client.number]
+        pubkey: client.player.pubkey,
+        player: client.player.number,
+        liveness: client.player.liveness,
+        character: characters[client.player.number]
         // we don't send (secret) powers to sit around in frontend state, to prevent coercion
       }
     }))
