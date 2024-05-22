@@ -68,9 +68,9 @@ STATE TRANSITION CONSTRAINTS:
 Constraints can be added where other roles are permitted, so long as they can be expressed as vector arithmetic on elements in these data structures.
 
 TODO: KNOWN MISSING CONSTRAINTS:
-KPnv, KSnv >= 0   for all (n,v) !         (no negative votes)
-KPnv equal (100)  for all (n,v)           (everyone has public vote power)
-KSnv equal for each n, for all v          (for each player, the player has the same voting power against all players)
+* KPnv, KSnv >= 0   for all (n,v) !         (no negative votes)
+* KPnv equal (100)  for all (n,v)           (everyone has public vote power)
+* KSnv equal for each n, for all v          (for each player, the player has the same voting power against all players)
 
 ## Components
 
