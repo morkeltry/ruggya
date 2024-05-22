@@ -1,9 +1,13 @@
-# Ruggy-a
+# Who's rugging who?
 
-(It's like Mafia)
+(It's like [Mafia](https://en.wikipedia.org/wiki/Mafia_(party_game)))
 A multiplayer selective information disclosure game,
 repo based on https://github.com/Cardinal-Cryptography/zk-dapp-template
 
+## The story
+Who's rugging who is a story of no rules 21st century high finance. AKA crypto.
+The big players own so many stakes in each other, all opaque and unregulated - we don't know which of them are colluding, or who pose a systemic risk. Even the benevolent government's saintly regulators are not keeping order as they claim, but playing their own nihilistic agenda.
+Everybody says to be looking out for the little people but somewhere in their interlocked system of perverse incentives, some of the players are secretly colluding to pump their bags by risking toppling the whole crypto ecosystem. They are *The Maffya*.
 
 ## Who's involved?
 #### The gamesmaster
@@ -17,6 +21,15 @@ repo based on https://github.com/Cardinal-Cryptography/zk-dapp-template
 
 #### Special Power Bagholders
 - Not yet implemented but special powers can include: vote neutralisation, rug-proofing, bag-pumping
+
+## Gameplay
+After registration and before the game starts, players are allocated a character. To prevent real-life coercion, this stage is the only point at which a player can find out whether or not they are Maffya. Clicking 'Show Special Powers' will either reveal a modal, with special powers, or will do nothing. This is the ONLY time at which the Maffya status or otherwise is available in frontend state.
+
+When the game starts, all players, asynchronously, have the chance to vote to rug another (or more then one) player. (Currently the frontend is set to vote only 100%, but nothing prevents this from being changed to allocate partial votes to different players.
+The top row is the public vote that the relayer can reveal to all parties after the round. The lower row is the secret vote which only Maffya can use.
+All players can enter any votes in the frontend (because the Maffya / non-Maffya status of players is not available to prevent coercion) but if a non-Maffya player tries to enter a secret vote, it will be rejected by the relayer. Similarly, if the player changes the DOM to give themselves more than their allocated voting power.
+The relayer cannot ovverride this constraint, since fulfillment of the constraints is proved by circom and the resulting proof verified in the smart contract.
+
 
 ## Data structure
 STATE:
@@ -47,7 +60,8 @@ STATE TRANSITION CONSTRAINTS:
 
 Constraints can be added where other roles are permitted, so long as they can be expressed as vector arithmetic on elements in these data structures.
 
-
+TODO: KNOWN MISSING CONSTRAINTS:
+KPnv, KSnv >= 0   for all (n,v) !
 
 ## Components
 
