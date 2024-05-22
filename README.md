@@ -28,7 +28,14 @@ After registration and before the game starts, players are allocated a character
 When the game starts, all players, asynchronously, have the chance to vote to rug another (or more then one) player. (Currently the frontend is set to vote only 100%, but nothing prevents this from being changed to allocate partial votes to different players.
 The top row is the public vote that the relayer can reveal to all parties after the round. The lower row is the secret vote which only Maffya can use.
 All players can enter any votes in the frontend (because the Maffya / non-Maffya status of players is not available to prevent coercion) but if a non-Maffya player tries to enter a secret vote, it will be rejected by the relayer. Similarly, if the player changes the DOM to give themselves more than their allocated voting power.
-The relayer cannot ovverride this constraint, since fulfillment of the constraints is proved by circom and the resulting proof verified in the smart contract.
+The relayer cannot ovverride this constraint, since fulfillment of the constraints is proved in circom and the resulting proof verified in the smart contract.
+
+Game logic is calculated in the relayer, which has a full view into state. There is no way without MPC or FHE, to avoid some trusted party having a view into state. However, the relayer can only view and potentially censor, it cannot manipulate game moves or their results.
+
+The new game state is sent back to the frontends by websocket, and receipt of the message triggers update of the new game state in the frontend ready for another round (or game over).
+
+Future work would be to add circuits to verify the fairness of initial game state (equal distribution of votes, etc.), and to add alternative games circuits including roles such as 'Campaign Donor' that can affect other variables than liveness, eg Campaign Donor could censor a chosen player's vote.
+
 
 
 ## Data structure
@@ -61,7 +68,9 @@ STATE TRANSITION CONSTRAINTS:
 Constraints can be added where other roles are permitted, so long as they can be expressed as vector arithmetic on elements in these data structures.
 
 TODO: KNOWN MISSING CONSTRAINTS:
-KPnv, KSnv >= 0   for all (n,v) !
+KPnv, KSnv >= 0   for all (n,v) !         (no negative votes)
+KPnv equal (100)  for all (n,v)           (everyone has public vote power)
+KSnv equal for each n, for all v          (for each player, the player has the same voting power against all players)
 
 ## Components
 
