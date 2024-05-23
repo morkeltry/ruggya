@@ -108,7 +108,7 @@ const App = () => {
     setShowModal(powers);
     setTimeout(() => {
       setShowModal(false);
-    }, 500);
+    }, 750);
   };
 
   const handleNextPage = () => {
