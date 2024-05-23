@@ -1,6 +1,7 @@
 # Who's rugging who?
 
 (It's like [Mafia](https://en.wikipedia.org/wiki/Mafia_(party_game)))
+
 A multiplayer selective information disclosure game,
 repo based on https://github.com/Cardinal-Cryptography/zk-dapp-template
 
@@ -36,7 +37,10 @@ The new game state is sent back to the frontends by websocket, and receipt of th
 
 Future work would be to add circuits to verify the fairness of initial game state (equal distribution of votes, etc.), and to add alternative games circuits including roles such as 'Campaign Donor' that can affect other variables than liveness, eg Campaign Donor could censor a chosen player's vote.
 
-
+![SBF](./screenshots/SBF.jpg)
+![Show secret powers](./screenshots/secret_powers.jpg)
+![Player Grid](./screenshots/grid.jpg)
+![You win!](./screenshots/you_win.jpg)
 
 ## Data structure
 STATE:
